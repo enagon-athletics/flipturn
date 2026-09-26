@@ -1,6 +1,6 @@
 {
   "name": "@enagonathletics/flipturn",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read and write swim meet files (SDIF, Hy-Tek .hy3/.ev3/.hyv) in TypeScript.",
   "keywords": [
     "swimming",
