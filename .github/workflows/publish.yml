@@ -35,7 +35,7 @@ jobs:
       # No registry-url: setup-node's placeholder _authToken blocks the OIDC fallback.
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 26
 
       - run: npm install -g npm@latest
 
