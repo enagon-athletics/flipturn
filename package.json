@@ -50,6 +50,10 @@
     "./hyv": {
       "types": "./dist/hyv/index.d.ts",
       "import": "./dist/hyv/index.js"
+    },
+    "./zip": {
+      "types": "./dist/zip/index.d.ts",
+      "import": "./dist/zip/index.js"
     }
   },
   "files": [
