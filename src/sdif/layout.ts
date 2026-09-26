@@ -1,3 +1,4 @@
+// Field offsets are from the SDIF v3 specification, cross-checked against swimparse and swimlib.
 import type { FieldSpec } from './fixed-width.js';
 
 const f = (start: number, length: number, extra: Omit<FieldSpec, 'start' | 'length'> = {}) => ({
