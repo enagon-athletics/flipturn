@@ -43,7 +43,7 @@ TypeScript strict mode. Tabs for indentation (see `.editorconfig`). Comments sta
 ## Release model
 
 One branch (`main`). Conventional-commit pushes accumulate into a release-please PR;
-merging it tags a release and publishes to npm via `.github/workflows/publish.yml`,
+merging it tags a release and publishes to npm via `.github/workflows/release.yml`,
 registered as this package's trusted publisher on npmjs.com. Every PR and push to `main`
 also publishes a preview build via [pkg-pr-new](https://github.com/stackblitz-labs/pkg.pr.new) —
 no version bump, no dist-tag, no manifest ceremony.
