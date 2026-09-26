@@ -8,5 +8,5 @@ export type { SdifWriteOptions, SdifWriteResult } from './sdif/index.js';
 export { readEv3 } from './ev3/index.js';
 export { readHyv } from './hyv/index.js';
 export type { SetupReadOptions } from './ev3/index.js';
-export { detectFormat, readMeetArchive, readMeetFiles, unzip } from './zip/index.js';
+export { detectFormat, readMeetArchive, readMeetFiles, unzip, ZipReadError } from './zip/index.js';
 export type { MeetFile, UnzipOptions, ZipEntry } from './zip/index.js';

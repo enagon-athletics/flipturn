@@ -1,6 +1,13 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { detectFormat, readMeetArchive, readMeetFiles, unzip } from '../../src/zip/index.js';
+import {
+	detectFormat,
+	readMeetArchive,
+	readMeetFiles,
+	unzip,
+	ZipReadError
+} from '../../src/zip/index.js';
+import { buildZip } from './build-zip.js';
 
 const load = (path: string) =>
 	new Uint8Array(readFileSync(new URL(`../fixtures/${path}`, import.meta.url)));
@@ -23,7 +30,9 @@ describe('unzip', () => {
 	});
 
 	test('rejects bytes that are not a zip archive', async () => {
-		await expect(unzip(load('sdif/results.sd3'))).rejects.toThrow('Not a zip archive');
+		const failure = unzip(load('sdif/results.sd3'));
+		await expect(failure).rejects.toThrow('Not a zip archive');
+		await expect(failure).rejects.toBeInstanceOf(ZipReadError);
 	});
 
 	test('rejects an entry whose CRC does not match', async () => {
@@ -37,6 +46,25 @@ describe('unzip', () => {
 		await expect(unzip(load('zip/results.zip'), { maxEntryBytes: 1000 })).rejects.toThrow(
 			'Results.cl2 is larger than 1000 bytes'
 		);
+	});
+
+	test('aborts decompression once output passes the cap, instead of buffering it all', async () => {
+		const payload = new Uint8Array(2 * 1024 * 1024).fill(65);
+		const zip = buildZip([{ name: 'bomb.bin', data: payload, declaredSize: 64 }]);
+		const failure = unzip(zip, { maxEntryBytes: 1024 });
+		await expect(failure).rejects.toBeInstanceOf(ZipReadError);
+		await expect(failure).rejects.toThrow('bomb.bin decompresses past its 64-byte cap');
+	});
+
+	test('caps total decompressed bytes across every entry', async () => {
+		const chunk = new Uint8Array(200).fill(66);
+		const zip = buildZip([
+			{ name: 'a.bin', data: chunk, method: 0 },
+			{ name: 'b.bin', data: chunk, method: 0 },
+			{ name: 'c.bin', data: chunk, method: 0 }
+		]);
+		await expect(unzip(zip, { maxTotalBytes: 400 })).rejects.toBeInstanceOf(ZipReadError);
+		expect((await unzip(zip, { maxTotalBytes: 1000 })).length).toBe(3);
 	});
 });
 
