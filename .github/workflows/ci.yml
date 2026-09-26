@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    # pkg-pr-new needs pull-requests: write for its sticky PR comment.
+    # Forked PRs get a read-only token automatically, so this is safe.
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun test
+
+      - name: Build
+        run: bun run build
+
+      - name: Check published types (attw)
+        run: bunx attw --pack . --profile esm-only
+
+      - name: Verify LICENSE and THIRD_PARTY_NOTICES.md are packed
+        run: |
+          # --ignore-scripts: the prepare/husky lifecycle banner would otherwise
+          # print to stdout ahead of the JSON and break the parse.
+          npm pack --dry-run --json --ignore-scripts \
+            | jq -e '.[0].files | map(.path) | (any(. == "LICENSE") and any(. == "THIRD_PARTY_NOTICES.md"))'
+
+      - name: Publish preview package
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        run: bunx pkg-pr-new publish .
+
+  commitlint:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: jdx/mise-action@v4
+        with:
+          cache: true
+
+      - run: bun install --frozen-lockfile
+
+      - name: Validate commits
+        run: bunx commitlint --from=${{ github.event.pull_request.base.sha }} --to=${{ github.event.pull_request.head.sha }} --verbose

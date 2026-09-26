@@ -1,0 +1,93 @@
+{
+  "name": "@enagonathletics/flipturn",
+  "version": "0.0.0",
+  "description": "Read and write swim meet files (SDIF, Hy-Tek .hy3/.ev3/.hyv) in TypeScript.",
+  "keywords": [
+    "swimming",
+    "sdif",
+    "hy-tek",
+    "hy3",
+    "sd3",
+    "cl2",
+    "ev3",
+    "meet-manager"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enagon-athletics/flipturn.git"
+  },
+  "homepage": "https://github.com/enagon-athletics/flipturn#readme",
+  "bugs": {
+    "url": "https://github.com/enagon-athletics/flipturn/issues"
+  },
+  "author": "Enagon Athletics",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    },
+    "./sdif": {
+      "types": "./dist/sdif/index.d.ts",
+      "import": "./dist/sdif/index.js"
+    },
+    "./hy3": {
+      "types": "./dist/hy3/index.d.ts",
+      "import": "./dist/hy3/index.js"
+    },
+    "./ev3": {
+      "types": "./dist/ev3/index.d.ts",
+      "import": "./dist/ev3/index.js"
+    },
+    "./hyv": {
+      "types": "./dist/hyv/index.d.ts",
+      "import": "./dist/hyv/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && publint",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "prettier --check . && eslint .",
+    "lint:fix": "prettier --write . && eslint . --fix",
+    "test": "bun test",
+    "attw": "attw --pack . --profile esm-only",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "@eslint/js": "^10.0.1",
+    "@types/bun": "^1.4.2",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.12.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.9",
+    "publint": "^0.3.24",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.70.1"
+  }
+}

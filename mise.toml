@@ -1,0 +1,28 @@
+min_version = "2024.9.5"
+
+[tools]
+node = "24"
+bun = "latest"
+
+[env]
+_.path = ['{{config_root}}/node_modules/.bin']
+
+[tasks.install]
+description = "Install dependencies"
+run = "bun install"
+
+[tasks.build]
+description = "Build the package"
+run = "bun run build"
+
+[tasks.typecheck]
+description = "Type-check the package"
+run = "bun run typecheck"
+
+[tasks.lint]
+description = "Run prettier + eslint"
+run = "bun run lint"
+
+[tasks.test]
+description = "Run tests"
+run = "bun test"
