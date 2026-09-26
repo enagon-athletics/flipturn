@@ -2,7 +2,14 @@
 import { courseFromCode } from '../core/codes.js';
 import type { SwimTime } from '../core/swim-time.js';
 import { toText } from '../core/text.js';
-import type { Course, MeetEvent, ReaderInput, ReadResult, Stroke } from '../core/types.js';
+import type {
+	Course,
+	MeetEvent,
+	ReaderInput,
+	ReadResult,
+	SetupReadOptions,
+	Stroke
+} from '../core/types.js';
 import { compact, emptyMeet, numberOrUndefined } from '../internal/builder.js';
 import {
 	clean,
@@ -12,8 +19,7 @@ import {
 	qualifying,
 	setupDate,
 	setupEvent,
-	splitSetup,
-	type SetupReadOptions
+	splitSetup
 } from '../internal/setup.js';
 
 const STROKES: Readonly<Record<string, Stroke>> = {

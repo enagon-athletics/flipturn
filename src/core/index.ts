@@ -25,6 +25,7 @@ export type {
 	ResultStatus,
 	Round,
 	Session,
+	SetupReadOptions,
 	SexCode,
 	Stroke,
 	Swimmer,

@@ -15,11 +15,6 @@ import type {
 } from '../core/types.js';
 import { compact, splitLines } from './builder.js';
 
-export interface SetupReadOptions {
-	/** `null` drops unset-date sentinels and sub-second placeholder cuts. Defaults to `keep`. */
-	readonly placeholders?: 'keep' | 'null';
-}
-
 export const clean = (value: string | undefined): string => (value ?? '').trim();
 
 const EPOCH_SENTINEL = /^(01\/01\/1970|12\/30\/1899)$/;

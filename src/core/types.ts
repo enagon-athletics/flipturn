@@ -214,3 +214,8 @@ export interface FormatDescriptor {
 	readonly read: boolean;
 	readonly write: boolean;
 }
+
+export interface SetupReadOptions {
+	/** `null` drops unset-date sentinels and sub-second placeholder cuts. Defaults to `keep`. */
+	readonly placeholders?: 'keep' | 'null';
+}

@@ -1,7 +1,13 @@
 // Ported from https://github.com/g0rgonus/swimparse @ dc872a5 (MIT).
 import { courseFromCode } from '../core/codes.js';
 import { toText } from '../core/text.js';
-import type { MeetEvent, ReaderInput, ReadResult, Stroke } from '../core/types.js';
+import type {
+	MeetEvent,
+	ReaderInput,
+	ReadResult,
+	SetupReadOptions,
+	Stroke
+} from '../core/types.js';
 import { address, compact, emptyMeet, numberOrUndefined } from '../internal/builder.js';
 import {
 	clean,
@@ -13,8 +19,7 @@ import {
 	qualifying,
 	setupDate,
 	setupEvent,
-	splitSetup,
-	type SetupReadOptions
+	splitSetup
 } from '../internal/setup.js';
 
 const STROKES: Readonly<Record<string, Stroke>> = {

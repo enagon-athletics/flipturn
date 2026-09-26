@@ -8,4 +8,4 @@ export const FORMAT: FormatDescriptor = {
 };
 
 export { readHyv } from './read.js';
-export type { SetupReadOptions } from '../internal/setup.js';
+export type { SetupReadOptions } from '../core/types.js';
