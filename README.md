@@ -30,6 +30,34 @@ Every reader returns the same format-neutral `Meet` model plus the file's raw re
 any warnings. Known gaps: HY3 split records (G1) are not read, and Team Unify's "Extended"
 SD3 variant is not written until a real sample has been compared.
 
+### Entry limits and fees
+
+`Meet.entryLimits` and `Meet.fees` are meet-wide; `MeetEvent.entryFee` is per event and
+`IndividualEntry`/`RelayEntry.entryFee` is per entry. A format only gets a field here when a
+byte position for it was confirmed against a documented field table or a real exported file —
+see [porting policy](docs/porting-policy.md) for the sources.
+
+| Format | `entryLimits`                                                                                                                                                                                                                                                                 | Fee types                                                                                                                                    |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| EV3    | `maxTotalEntries`, `maxIndividualEntries`, `maxRelayEntries` — meet-wide, per swimmer except the total (header fields 19–21, 1-based)                                                                                                                                         | `MeetEvent.entryFee` per event/relay (field 15), plus meet-wide `teamSurcharge`, `athleteSurcharge`, `facilitySurcharge` (header fields 7–9) |
+| HYV    | None — confirmed absent. Team Manager's 11-field header and ~18-field event row have no unclaimed columns for one; cross-checked against `swimparse` and `hytek-parser`'s independent HYV readers, neither of which decodes anything beyond the existing per-event `entryFee` | `MeetEvent.entryFee` per event/relay only                                                                                                    |
+| HY3    | None — confirmed absent. A results/entries format has no reason to carry them and none of `swimparse`, `swimlib` or `hytek-parser` decode any                                                                                                                                 | `IndividualEntry.entryFee` (E1, 1-based cols 33–38) and `RelayEntry.entryFee` (F1, same columns) only — no meet-wide fee field               |
+| SDIF   | None — confirmed absent from the spec text itself (no field in `B1`/`B2`/`D0`/`D1`)                                                                                                                                                                                           | None — confirmed absent, same basis                                                                                                          |
+
+Two candidates were investigated and deliberately **not** modeled:
+
+- **EV3 event-row columns 27–29** (`max_entries`, `max_individual_entries`, `max_relay_entries`
+  per `swimlib`'s field table) sit right after the per-event session columns, which would fit
+  a per-day/session limit — but the one EV3 sample available repeats the same three values on
+  every event regardless of day, which is equally consistent with "an event-level cap" as with
+  "a per-day limit stated redundantly." Absent a real file where they vary by day, this is not
+  asserted as the per-day limit the task asked for.
+- **HY3 B2's `meetFee`** (`swimlib`'s claimed 1-based cols 100–106) does not survive a cross-check:
+  `swimlib`'s own B1 date fields, in the same record family, land on garbage when checked against
+  real Meet Manager results exports, while `swimparse` and `hytek-parser` — the two libraries
+  whose B-record offsets _do_ reproduce the real dates in those files — neither decode a B2 fee
+  at all. Treated as unconfirmed, not modeled.
+
 ## Usage
 
 Read any meet file:

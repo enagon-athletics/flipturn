@@ -65,6 +65,12 @@ export function compact<T extends object>(value: T): T {
 	return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined)) as T;
 }
 
+/** `value` with undefined fields dropped, or `undefined` if nothing is left. */
+export function nonEmpty<T extends object>(value: T): T | undefined {
+	const kept = compact(value);
+	return Object.keys(kept).length > 0 ? kept : undefined;
+}
+
 /** An address object, or undefined when every part is blank. */
 export function address<T extends Record<string, string | undefined>>(parts: T): T | undefined {
 	const kept = compact(

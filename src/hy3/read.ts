@@ -1,10 +1,12 @@
 // Ported from https://github.com/g0rgonus/swimparse @ dc872a5 (MIT).
+// E1/F1 entryFee field position from https://github.com/dmanusrex/swimlib @ c3dd473 (MIT).
 import { parseAgeCode } from '../core/age-band.js';
 import { courseFromCode, eventKey, genderFromSexCode, isSexCode } from '../core/codes.js';
 import { isoFromMmddyyyy } from '../core/dates.js';
 import { Hy3ReadError } from '../core/errors.js';
 import { swimTimeFromSeconds } from '../core/swim-time.js';
 import { toText } from '../core/text.js';
+import { numberOrUndefined } from '../internal/builder.js';
 import type {
 	Course,
 	EventType,
@@ -223,6 +225,7 @@ export function readHy3(input: ReaderInput, options: Hy3ReadOptions = {}): ReadR
 						swimmerId: athlete.swimmerId,
 						teamCode: athlete.teamCode,
 						seedTime: swimTimeFromSeconds(line.slice(52, 59)) ?? undefined,
+						entryFee: numberOrUndefined(line.slice(32, 38)),
 						results: [] as Result[]
 					});
 					entries.set(key, entry);
@@ -247,6 +250,7 @@ export function readHy3(input: ReaderInput, options: Hy3ReadOptions = {}): ReadR
 						teamCode: relayTeam,
 						relayLetter: letter,
 						seedTime: swimTimeFromSeconds(line.slice(52, 59)) ?? undefined,
+						entryFee: numberOrUndefined(line.slice(32, 38)),
 						results: [] as Result[],
 						legs: [] as RelayLeg[]
 					});

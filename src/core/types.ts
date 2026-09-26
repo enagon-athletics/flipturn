@@ -76,6 +76,23 @@ export interface QualifyingTimes {
 	readonly SCY?: SwimTime;
 }
 
+/**
+ * Meet-wide entry caps, each per swimmer except `maxTotalEntries`. Hy-Tek EV3 is the only
+ * format confirmed to carry these (its header); HYV, HY3 and SDIF do not.
+ */
+export interface EntryLimits {
+	readonly maxTotalEntries?: number;
+	readonly maxIndividualEntries?: number;
+	readonly maxRelayEntries?: number;
+}
+
+/** Flat, meet-wide fees on top of any per-event or per-entry fee. EV3-only; see the README. */
+export interface MeetFees {
+	readonly teamSurcharge?: number;
+	readonly athleteSurcharge?: number;
+	readonly facilitySurcharge?: number;
+}
+
 export interface MeetEvent {
 	/** Unique within a meet; entries reference events by this. */
 	readonly id: string;
@@ -130,6 +147,8 @@ export interface IndividualEntry {
 	readonly teamCode?: string;
 	readonly seedTime?: SwimTime;
 	readonly seedCourse?: Course;
+	/** Fee charged for this specific entry (HY3 E1); the event's own price is `MeetEvent.entryFee`. */
+	readonly entryFee?: number;
 	readonly results: readonly Result[];
 }
 
@@ -149,6 +168,8 @@ export interface RelayEntry {
 	readonly relayLetter: string;
 	readonly seedTime?: SwimTime;
 	readonly seedCourse?: Course;
+	/** Fee charged for this specific entry (HY3 F1); the event's own price is `MeetEvent.entryFee`. */
+	readonly entryFee?: number;
 	readonly results: readonly Result[];
 	readonly legs: readonly RelayLeg[];
 }
@@ -174,6 +195,8 @@ export interface Meet {
 	readonly sanction?: string;
 	readonly address?: Address;
 	readonly host?: MeetHost;
+	readonly entryLimits?: EntryLimits;
+	readonly fees?: MeetFees;
 	readonly teams: readonly Team[];
 	readonly swimmers: readonly Swimmer[];
 	readonly events: readonly MeetEvent[];

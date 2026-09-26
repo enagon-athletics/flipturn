@@ -27,6 +27,11 @@ describe('readSdif on a results file', () => {
 		});
 	});
 
+	test('carries no meet-level entry limits or fees: the SDIF spec defines no field for them', () => {
+		expect(meet.entryLimits).toBeUndefined();
+		expect(meet.fees).toBeUndefined();
+	});
+
 	test('reads teams with their coach', () => {
 		expect(meet.teams).toEqual([
 			{
