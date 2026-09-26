@@ -49,8 +49,9 @@ jobs:
           npm pack --dry-run --json --ignore-scripts \
             | jq -e '.[0].files | map(.path) | (any(. == "LICENSE") and any(. == "THIRD_PARTY_NOTICES.md"))'
 
+      # pkg.pr.new serves public repos only, via its GitHub App.
       - name: Publish preview package
-        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        if: ${{ !github.event.repository.private && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') }}
         run: bunx pkg-pr-new publish .
 
   commitlint:
