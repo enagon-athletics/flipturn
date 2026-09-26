@@ -9,3 +9,4 @@ export const FORMAT: FormatDescriptor = {
 
 export { readEv3 } from './read.js';
 export type { SetupReadOptions } from '../core/types.js';
+export { EventFileReadError } from '../core/errors.js';

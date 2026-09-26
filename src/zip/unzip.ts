@@ -1,3 +1,5 @@
+import { ZipReadError } from '../core/errors.js';
+
 export interface ZipEntry {
 	readonly name: string;
 	readonly bytes: Uint8Array;
@@ -8,14 +10,6 @@ export interface UnzipOptions {
 	readonly maxEntryBytes?: number;
 	/** Largest total uncompressed bytes across every entry combined. Defaults to 512 MiB. */
 	readonly maxTotalBytes?: number;
-}
-
-/** A zip archive that is corrupt, unsupported, or exceeds a size guard. */
-export class ZipReadError extends Error {
-	constructor(message: string) {
-		super(message);
-		this.name = 'ZipReadError';
-	}
 }
 
 const EOCD_SIGNATURE = 0x06054b50;

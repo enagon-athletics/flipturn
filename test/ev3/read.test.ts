@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { readEv3 } from '../../src/ev3/index.js';
+import { EventFileReadError, readEv3 } from '../../src/ev3/index.js';
 
 const bytes = new Uint8Array(readFileSync(new URL('../fixtures/ev3/meet.ev3', import.meta.url)));
 
@@ -92,6 +92,7 @@ describe('readEv3', () => {
 	test('throws on an unknown event sex code rather than guessing mixed', () => {
 		const text = new TextDecoder('latin1').decode(bytes).replace(';I;G;0;10;', ';I;P;0;10;');
 		expect(() => readEv3(text)).toThrow('unknown event sex code "P" on event 1');
+		expect(() => readEv3(text)).toThrow(EventFileReadError);
 	});
 
 	test('nulls placeholder dates and cuts only when asked', () => {

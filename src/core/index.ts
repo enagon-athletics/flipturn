@@ -38,3 +38,11 @@ export { COURSE_LETTER, courseFromCode, eventKey, genderFromSexCode, isSexCode }
 export type { EventIdentity } from './codes.js';
 export { isoFromMmddyyyy, mmddyyyyFromIso } from './dates.js';
 export { decodeWindows1252, encodeWindows1252, toText } from './text.js';
+export {
+	EventFileReadError,
+	FlipturnError,
+	Hy3ReadError,
+	SdifReadError,
+	SdifWriteError,
+	ZipReadError
+} from './errors.js';

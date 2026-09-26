@@ -2,6 +2,7 @@
 import { parseAgeCode } from '../core/age-band.js';
 import { eventKey, genderFromSexCode, isSexCode } from '../core/codes.js';
 import { isoFromMmddyyyy } from '../core/dates.js';
+import { EventFileReadError } from '../core/errors.js';
 import { parseSwimTime, type SwimTime } from '../core/swim-time.js';
 import type {
 	Course,
@@ -61,7 +62,9 @@ export function qualifying(times: Partial<Record<Course, SwimTime>>): Qualifying
 
 export function eventSex(raw: string | undefined, number: string): SexCode {
 	const code = clean(raw);
-	if (!isSexCode(code)) throw new Error(`unknown event sex code "${code}" on event ${number}`);
+	if (!isSexCode(code)) {
+		throw new EventFileReadError(`unknown event sex code "${code}" on event ${number}`);
+	}
 	return code;
 }
 
@@ -133,6 +136,6 @@ export function splitSetup(text: string, format: string): SplitRecords {
 		parsed.push({ fields: line.replace(/\*>\s*$/, '').split(';'), line: index + 1 });
 	});
 	const [head, ...rows] = parsed;
-	if (!head) throw new Error(`empty .${format} file`);
+	if (!head) throw new EventFileReadError(`empty .${format} file`);
 	return { head: head.fields, rows, records };
 }

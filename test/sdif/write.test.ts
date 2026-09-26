@@ -143,6 +143,7 @@ describe('writeSdifEntries modes and validation', () => {
 	test('rejects text Windows-1252 cannot carry', () => {
 		const meet: Meet = { ...entriesMeet, name: 'Meet 名' };
 		expect(() => writeSdifEntries(meet, options)).toThrow('not representable in Windows-1252');
+		expect(() => writeSdifEntries(meet, options)).toThrow(SdifWriteError);
 	});
 });
 

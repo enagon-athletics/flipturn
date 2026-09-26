@@ -10,3 +10,4 @@ export const FORMAT: FormatDescriptor = {
 export { hy3Checksum } from './checksum.js';
 export { readHy3 } from './read.js';
 export type { Hy3ReadOptions } from './read.js';
+export { Hy3ReadError } from '../core/errors.js';

@@ -8,5 +8,6 @@ export const FORMAT: FormatDescriptor = {
 };
 
 export { readSdif } from './read.js';
-export { SdifWriteError, writeSdifEntries } from './write.js';
+export { writeSdifEntries } from './write.js';
 export type { SdifWriteOptions, SdifWriteResult } from './write.js';
+export { SdifReadError, SdifWriteError } from '../core/errors.js';

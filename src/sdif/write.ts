@@ -1,5 +1,6 @@
 import { COURSE_LETTER } from '../core/codes.js';
 import { mmddyyyyFromIso } from '../core/dates.js';
+import { SdifWriteError } from '../core/errors.js';
 import { encodeWindows1252 } from '../core/text.js';
 import type {
 	AgeBand,
@@ -33,13 +34,6 @@ export interface SdifWriteResult {
 	readonly text: string;
 	/** Blank M2 fields and truncations: the spec's exceptions report. */
 	readonly warnings: readonly string[];
-}
-
-export class SdifWriteError extends Error {
-	constructor(readonly issues: readonly string[]) {
-		super(`SDIF entries file is invalid: ${issues.join('; ')}`);
-		this.name = 'SdifWriteError';
-	}
 }
 
 const INDIVIDUAL_STROKE: Partial<Record<Stroke, string>> = {
@@ -300,6 +294,10 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 
 	if (issues.length > 0) throw new SdifWriteError(issues);
 	const text = lines.map((line) => `${line}\r\n`).join('');
-	encodeWindows1252(text);
+	try {
+		encodeWindows1252(text);
+	} catch (error) {
+		throw new SdifWriteError([error instanceof Error ? error.message : String(error)]);
+	}
 	return { text, warnings: [...warnings] };
 }

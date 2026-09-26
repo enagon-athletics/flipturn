@@ -2,6 +2,7 @@
 import { parseAgeCode } from '../core/age-band.js';
 import { courseFromCode, eventKey, genderFromSexCode, isSexCode } from '../core/codes.js';
 import { isoFromMmddyyyy } from '../core/dates.js';
+import { Hy3ReadError } from '../core/errors.js';
 import { swimTimeFromSeconds } from '../core/swim-time.js';
 import { toText } from '../core/text.js';
 import type {
@@ -150,7 +151,8 @@ export function readHy3(input: ReaderInput, options: Hy3ReadOptions = {}): ReadR
 		records.push({ code, line: lineNo, text: line });
 		if (checksumMode !== 'ignore' && line.length >= 130) {
 			if (hy3Checksum(line) !== line.slice(128, 130)) {
-				if (checksumMode === 'error') throw new Error(`HY3 checksum mismatch on line ${lineNo}`);
+				if (checksumMode === 'error')
+					throw new Hy3ReadError(`HY3 checksum mismatch on line ${lineNo}`);
 				badChecksums.push(lineNo);
 			}
 		}

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { hy3Checksum, readHy3 } from '../../src/hy3/index.js';
+import { hy3Checksum, Hy3ReadError, readHy3 } from '../../src/hy3/index.js';
 
 const bytes = new Uint8Array(readFileSync(new URL('../fixtures/hy3/results.hy3', import.meta.url)));
 const text = new TextDecoder('latin1').decode(bytes);
@@ -142,6 +142,14 @@ describe('readHy3 checksum handling', () => {
 		expect(() => readHy3(tampered, { checksum: 'error' })).toThrow(
 			'HY3 checksum mismatch on line 3'
 		);
+		expect(() => readHy3(tampered, { checksum: 'error' })).toThrow(Hy3ReadError);
+		let thrown: unknown;
+		try {
+			readHy3(tampered, { checksum: 'error' });
+		} catch (error) {
+			thrown = error;
+		}
+		expect((thrown as Hy3ReadError).code).toBe('hy3-read');
 		expect(readHy3(tampered, { checksum: 'ignore' }).warnings).toEqual([]);
 	});
 
