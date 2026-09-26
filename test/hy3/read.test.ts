@@ -70,6 +70,7 @@ describe('readHy3', () => {
 			swimmerId: 'tern|ada|2012-03-14',
 			teamCode: 'HSC',
 			seedTime: { kind: 'time', hundredths: 6532 },
+			entryFee: 5,
 			results: [
 				{
 					round: 'prelim',
@@ -114,6 +115,7 @@ describe('readHy3', () => {
 			teamCode: 'HSC',
 			relayLetter: 'A',
 			seedTime: { kind: 'time', hundredths: 13000 },
+			entryFee: 20,
 			results: [{ round: 'final', time: { kind: 'time', hundredths: 12550 }, place: 1 }]
 		});
 		expect(relay?.kind === 'relay' && relay.legs).toEqual([
@@ -126,6 +128,20 @@ describe('readHy3', () => {
 
 	test('keeps raw records', () => {
 		expect(result.records.map((r) => r.code).slice(0, 4)).toEqual(['A1', 'B1', 'C1', 'D1']);
+	});
+
+	test('reads each entry fee from its own E1/F1 record', () => {
+		expect(meet.entries.map((e) => [e.eventId, e.entryFee])).toEqual([
+			['1', 5],
+			['2A', 10],
+			['5', 8.5],
+			['4', 20]
+		]);
+	});
+
+	test('carries no meet-level entry limits or fees: HY3 is a results/entries format with no field for them', () => {
+		expect(meet.entryLimits).toBeUndefined();
+		expect(meet.fees).toBeUndefined();
 	});
 });
 

@@ -24,6 +24,16 @@ describe('readEv3', () => {
 			entryDeadline: '2026-10-10',
 			sanction: 'BC-2026-001',
 			course: 'SCM',
+			entryLimits: {
+				maxTotalEntries: 18,
+				maxIndividualEntries: 14,
+				maxRelayEntries: 4
+			},
+			fees: {
+				teamSurcharge: 0,
+				athleteSurcharge: 2.5,
+				facilitySurcharge: 0
+			},
 			address: {
 				line1: '100 Harbour Way',
 				city: 'Victoria',

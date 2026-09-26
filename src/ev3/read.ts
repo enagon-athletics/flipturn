@@ -1,4 +1,5 @@
 // Ported from https://github.com/g0rgonus/swimparse @ dc872a5 (MIT).
+// Header entry-limit/surcharge field positions from https://github.com/dmanusrex/swimlib @ c3dd473 (MIT).
 import { courseFromCode } from '../core/codes.js';
 import { toText } from '../core/text.js';
 import type {
@@ -8,7 +9,7 @@ import type {
 	SetupReadOptions,
 	Stroke
 } from '../core/types.js';
-import { address, compact, emptyMeet, numberOrUndefined } from '../internal/builder.js';
+import { address, compact, emptyMeet, nonEmpty, numberOrUndefined } from '../internal/builder.js';
 import {
 	clean,
 	clockTime,
@@ -94,6 +95,16 @@ export function readEv3(input: ReaderInput, options: SetupReadOptions = {}): Rea
 			course: meetCourse,
 			sanction: clean(head[14]) || undefined,
 			entryDeadline: setupDate(head[23]),
+			entryLimits: nonEmpty({
+				maxTotalEntries: intOrNone(head[18]),
+				maxIndividualEntries: intOrNone(head[19]),
+				maxRelayEntries: intOrNone(head[20])
+			}),
+			fees: nonEmpty({
+				teamSurcharge: numberOrUndefined(clean(head[6])),
+				athleteSurcharge: numberOrUndefined(clean(head[7])),
+				facilitySurcharge: numberOrUndefined(clean(head[8]))
+			}),
 			address: address({
 				line1: clean(head[24]),
 				city: clean(head[26]),

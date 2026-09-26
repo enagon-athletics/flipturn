@@ -56,4 +56,9 @@ describe('readHyv', () => {
 		expect(meet.events[2]?.ageBand).toEqual({ min: 15, max: null });
 		expect(meet.events[3]?.ageBand).toEqual({ min: null, max: null });
 	});
+
+	test('carries no meet-level entry limits or fees: hyv has no header field for them', () => {
+		expect(meet.entryLimits).toBeUndefined();
+		expect(meet.fees).toBeUndefined();
+	});
 });
