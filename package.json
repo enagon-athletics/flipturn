@@ -58,6 +58,7 @@
   },
   "files": [
     "dist",
+    "src",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "README.md"

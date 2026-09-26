@@ -1,147 +1,137 @@
 // Field offsets are from the SDIF v3 specification, cross-checked against swimparse and swimlib.
-import type { FieldSpec } from './fixed-width.js';
-
-const f = (start: number, length: number, extra: Omit<FieldSpec, 'start' | 'length'> = {}) => ({
-	start,
-	length,
-	...extra
-});
-const text = { truncate: true } as const;
-const int = { align: 'right' } as const;
-const numeric = { align: 'numeric' } as const;
 
 export const A0 = {
-	org: f(3, 1),
-	version: f(4, 8),
-	fileCode: f(12, 2),
-	software: f(44, 20, text),
-	softwareVersion: f(64, 10, text),
-	contactName: f(74, 20, text),
-	contactPhone: f(94, 12),
-	created: f(106, 8)
-};
+	org: { start: 3, length: 1 },
+	version: { start: 4, length: 8 },
+	fileCode: { start: 12, length: 2 },
+	software: { start: 44, length: 20, truncate: true },
+	softwareVersion: { start: 64, length: 10, truncate: true },
+	contactName: { start: 74, length: 20, truncate: true },
+	contactPhone: { start: 94, length: 12 },
+	created: { start: 106, length: 8 }
+} as const;
 
 export const B1 = {
-	org: f(3, 1),
-	name: f(12, 30, text),
-	line1: f(42, 22, text),
-	line2: f(64, 22, text),
-	city: f(86, 20, text),
-	state: f(106, 2),
-	postalCode: f(108, 10),
-	country: f(118, 3),
-	meetType: f(121, 1),
-	start: f(122, 8),
-	end: f(130, 8),
-	course: f(150, 1)
-};
+	org: { start: 3, length: 1 },
+	name: { start: 12, length: 30, truncate: true },
+	line1: { start: 42, length: 22, truncate: true },
+	line2: { start: 64, length: 22, truncate: true },
+	city: { start: 86, length: 20, truncate: true },
+	state: { start: 106, length: 2 },
+	postalCode: { start: 108, length: 10 },
+	country: { start: 118, length: 3 },
+	meetType: { start: 121, length: 1 },
+	start: { start: 122, length: 8 },
+	end: { start: 130, length: 8 },
+	course: { start: 150, length: 1 }
+} as const;
 
 export const B2 = {
-	org: f(3, 1),
-	name: f(12, 30, text),
-	line1: f(42, 22, text),
-	line2: f(64, 22, text),
-	city: f(86, 20, text),
-	state: f(106, 2),
-	postalCode: f(108, 10),
-	country: f(118, 3),
-	phone: f(121, 12)
-};
+	org: { start: 3, length: 1 },
+	name: { start: 12, length: 30, truncate: true },
+	line1: { start: 42, length: 22, truncate: true },
+	line2: { start: 64, length: 22, truncate: true },
+	city: { start: 86, length: 20, truncate: true },
+	state: { start: 106, length: 2 },
+	postalCode: { start: 108, length: 10 },
+	country: { start: 118, length: 3 },
+	phone: { start: 121, length: 12 }
+} as const;
 
 export const C1 = {
-	org: f(3, 1),
-	code: f(12, 6),
-	name: f(18, 30, text),
-	shortName: f(48, 16, text),
-	line1: f(64, 22, text),
-	line2: f(86, 22, text),
-	city: f(108, 20, text),
-	state: f(128, 2),
-	postalCode: f(130, 10),
-	country: f(140, 3),
-	codeFifth: f(150, 1)
-};
+	org: { start: 3, length: 1 },
+	code: { start: 12, length: 6 },
+	name: { start: 18, length: 30, truncate: true },
+	shortName: { start: 48, length: 16, truncate: true },
+	line1: { start: 64, length: 22, truncate: true },
+	line2: { start: 86, length: 22, truncate: true },
+	city: { start: 108, length: 20, truncate: true },
+	state: { start: 128, length: 2 },
+	postalCode: { start: 130, length: 10 },
+	country: { start: 140, length: 3 },
+	codeFifth: { start: 150, length: 1 }
+} as const;
 
 export const C2 = {
-	org: f(3, 1),
-	code: f(12, 6),
-	coach: f(18, 30, text),
-	phone: f(48, 12),
-	individualEntries: f(60, 6, int),
-	athletes: f(66, 6, int),
-	relayEntries: f(72, 5, int),
-	relaySwimmers: f(77, 6, int),
-	splits: f(83, 6, int),
-	shortName: f(89, 16, text),
-	codeFifth: f(150, 1)
-};
+	org: { start: 3, length: 1 },
+	code: { start: 12, length: 6 },
+	coach: { start: 18, length: 30, truncate: true },
+	phone: { start: 48, length: 12 },
+	individualEntries: { start: 60, length: 6, align: 'right' },
+	athletes: { start: 66, length: 6, align: 'right' },
+	relayEntries: { start: 72, length: 5, align: 'right' },
+	relaySwimmers: { start: 77, length: 6, align: 'right' },
+	splits: { start: 83, length: 6, align: 'right' },
+	shortName: { start: 89, length: 16, truncate: true },
+	codeFifth: { start: 150, length: 1 }
+} as const;
 
 export const D0 = {
-	org: f(3, 1),
-	name: f(12, 28, text),
-	uss: f(40, 12),
-	attach: f(52, 1),
-	citizen: f(53, 3),
-	birth: f(56, 8),
-	age: f(64, 2, numeric),
-	sex: f(66, 1),
-	eventSex: f(67, 1),
-	distance: f(68, 4, int),
-	stroke: f(72, 1),
-	eventNumber: f(73, 4, numeric),
-	eventAge: f(77, 4),
-	swimDate: f(81, 8),
-	seed: f(89, 8),
-	seedCourse: f(97, 1)
-};
+	org: { start: 3, length: 1 },
+	name: { start: 12, length: 28, truncate: true },
+	uss: { start: 40, length: 12 },
+	attach: { start: 52, length: 1 },
+	citizen: { start: 53, length: 3 },
+	birth: { start: 56, length: 8 },
+	age: { start: 64, length: 2, align: 'numeric' },
+	sex: { start: 66, length: 1 },
+	eventSex: { start: 67, length: 1 },
+	distance: { start: 68, length: 4, align: 'right' },
+	stroke: { start: 72, length: 1 },
+	eventNumber: { start: 73, length: 4, align: 'numeric' },
+	eventAge: { start: 77, length: 4 },
+	swimDate: { start: 81, length: 8 },
+	seed: { start: 89, length: 8 },
+	seedCourse: { start: 97, length: 1 }
+} as const;
 
 export const D3 = {
-	ussNew: f(3, 14),
-	preferredName: f(17, 15, text)
-};
+	ussNew: { start: 3, length: 14 },
+	preferredName: { start: 17, length: 15, truncate: true }
+} as const;
 
 export const E0 = {
-	org: f(3, 1),
-	letter: f(12, 1),
-	team: f(13, 6),
-	legCount: f(19, 2, int),
-	eventSex: f(21, 1),
-	distance: f(22, 4, int),
-	stroke: f(26, 1),
-	eventNumber: f(27, 4, numeric),
-	eventAge: f(31, 4),
-	swimDate: f(38, 8),
-	seed: f(46, 8),
-	seedCourse: f(54, 1)
-};
+	org: { start: 3, length: 1 },
+	letter: { start: 12, length: 1 },
+	team: { start: 13, length: 6 },
+	legCount: { start: 19, length: 2, align: 'right' },
+	eventSex: { start: 21, length: 1 },
+	distance: { start: 22, length: 4, align: 'right' },
+	stroke: { start: 26, length: 1 },
+	eventNumber: { start: 27, length: 4, align: 'numeric' },
+	eventAge: { start: 31, length: 4 },
+	swimDate: { start: 38, length: 8 },
+	seed: { start: 46, length: 8 },
+	seedCourse: { start: 54, length: 1 }
+} as const;
 
 export const F0 = {
-	org: f(3, 1),
-	team: f(16, 6),
-	letter: f(22, 1),
-	name: f(23, 28, text),
-	uss: f(51, 12),
-	citizen: f(63, 3),
-	birth: f(66, 8),
-	age: f(74, 2, numeric),
-	sex: f(76, 1),
-	prelimLeg: f(77, 1),
-	swimoffLeg: f(78, 1),
-	finalLeg: f(79, 1),
-	ussNew: f(93, 14),
-	preferredName: f(107, 15, text)
-};
+	org: { start: 3, length: 1 },
+	team: { start: 16, length: 6 },
+	letter: { start: 22, length: 1 },
+	name: { start: 23, length: 28, truncate: true },
+	uss: { start: 51, length: 12 },
+	citizen: { start: 63, length: 3 },
+	birth: { start: 66, length: 8 },
+	age: { start: 74, length: 2, align: 'numeric' },
+	sex: { start: 76, length: 1 },
+	prelimLeg: { start: 77, length: 1 },
+	swimoffLeg: { start: 78, length: 1 },
+	finalLeg: { start: 79, length: 1 },
+	ussNew: { start: 93, length: 14 },
+	preferredName: { start: 107, length: 15, truncate: true }
+} as const;
 
 export const Z0 = {
-	org: f(3, 1),
-	fileCode: f(12, 2),
-	bRecords: f(44, 3, int),
-	meets: f(47, 3, int),
-	cRecords: f(50, 4, int),
-	teams: f(54, 4, int),
-	dRecords: f(58, 6, int),
-	swimmers: f(64, 6, int),
-	eRecords: f(70, 5, int),
-	fRecords: f(75, 6, int),
-	gRecords: f(81, 6, int)
-};
+	org: { start: 3, length: 1 },
+	fileCode: { start: 12, length: 2 },
+	bRecords: { start: 44, length: 3, align: 'right' },
+	meets: { start: 47, length: 3, align: 'right' },
+	cRecords: { start: 50, length: 4, align: 'right' },
+	teams: { start: 54, length: 4, align: 'right' },
+	dRecords: { start: 58, length: 6, align: 'right' },
+	swimmers: { start: 64, length: 6, align: 'right' },
+	eRecords: { start: 70, length: 5, align: 'right' },
+	fRecords: { start: 75, length: 6, align: 'right' },
+	gRecords: { start: 81, length: 6, align: 'right' }
+} as const;
