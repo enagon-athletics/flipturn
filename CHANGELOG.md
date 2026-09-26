@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/enagon-athletics/flipturn/compare/v0.2.0...v0.3.0) (2026-09-26)
+
+
+### Features
+
+* **core,ev3,hy3:** expose meet entry limits and entry fees ([#4](https://github.com/enagon-athletics/flipturn/issues/4)) ([748443a](https://github.com/enagon-athletics/flipturn/commit/748443af753b1b07f804c5d6c05487bac2679817))
+
+
+### CI
+
+* publish from the release workflow npm trusts ([7e2cd2e](https://github.com/enagon-athletics/flipturn/commit/7e2cd2ebb4f1acef23a24b589ae7b0437509270b))
+
 ## [0.2.0](https://github.com/enagon-athletics/flipturn/compare/v0.1.0...v0.2.0) (2026-09-26)
 
 
