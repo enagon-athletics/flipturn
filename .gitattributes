@@ -1,0 +1,2 @@
+# Fixtures are byte-exact meet files with CRLF endings.
+test/fixtures/** -text

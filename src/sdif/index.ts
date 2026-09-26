@@ -4,7 +4,9 @@ export const FORMAT: FormatDescriptor = {
 	name: 'SDIF v3',
 	extensions: ['.sd3', '.cl2'],
 	read: true,
-	write: false
+	write: true
 };
 
 export { readSdif } from './read.js';
+export { SdifWriteError, writeSdifEntries } from './write.js';
+export type { SdifWriteOptions, SdifWriteResult } from './write.js';
