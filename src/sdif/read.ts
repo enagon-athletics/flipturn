@@ -25,6 +25,7 @@ import {
 	compact,
 	emptyMeet,
 	intOrUndefined,
+	wholeOrUndefined,
 	numberOrUndefined,
 	splitLines,
 	splitName,
@@ -254,6 +255,7 @@ export function readSdif(input: ReaderInput): ReadResult<'sdif'> {
 						meetType: col(line, 121, 1) || undefined,
 						startDate: isoFromMmddyyyy(col(line, 122, 8)),
 						endDate: isoFromMmddyyyy(col(line, 130, 8)),
+						altitude: wholeOrUndefined(col(line, 138, 4)),
 						course: courseFromCode(col(line, 150, 1))
 					})
 				);

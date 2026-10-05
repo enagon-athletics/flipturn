@@ -84,6 +84,10 @@ export function intOrUndefined(raw: string): number | undefined {
 	return Number.isNaN(value) || value === 0 ? undefined : value;
 }
 
+export function wholeOrUndefined(raw: string): number | undefined {
+	return /^\d+$/.test(raw.trim()) ? Number(raw.trim()) : undefined;
+}
+
 export function numberOrUndefined(raw: string): number | undefined {
 	const value = Number.parseFloat(raw.trim());
 	return Number.isNaN(value) ? undefined : value;

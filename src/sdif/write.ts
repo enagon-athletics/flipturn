@@ -14,7 +14,13 @@ import type {
 	Swimmer,
 	Team
 } from '../core/types.js';
-import { formatRecord, formatSdifTime, type FieldValues, type Layout } from './fixed-width.js';
+import {
+	formatRecord,
+	formatSdifEventNumber,
+	formatSdifTime,
+	type FieldValues,
+	type Layout
+} from './fixed-width.js';
 import { A0, B1, B2, C1, C2, D0, D3, E0, F0, Z0 } from './layout.js';
 
 export interface SdifWriteOptions {
@@ -27,6 +33,10 @@ export interface SdifWriteOptions {
 	readonly software?: { readonly name?: string; readonly version?: string };
 	/** SDIF ORG Code 001; defaults to `1` (USS). */
 	readonly orgCode?: string;
+	/** `team-unify` also fills the columns Team Unify's Standard SD3 writes beyond the spec. */
+	readonly profile?: 'spec' | 'team-unify';
+	/** A0 columns 14-43; defaults to `Meet Entries` in the `team-unify` profile. */
+	readonly description?: string;
 }
 
 export interface SdifWriteResult {
@@ -76,6 +86,8 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 	const warnings = new Set<string>();
 	const canadian = options.mode === 'canadian';
 	const org = options.orgCode ?? '1';
+	const teamUnify = options.profile === 'team-unify';
+	const codeAlign = teamUnify ? 'right' : 'left';
 
 	const events = new Map(meet.events.map((e) => [e.id, e]));
 	const swimmers = new Map(meet.swimmers.map((s) => [s.id, s]));
@@ -91,6 +103,13 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 	if (!meet.address?.state) warnings.add('meet state is blank');
 	if (!meet.meetType) warnings.add('meet type is blank');
 	if (!meet.endDate) warnings.add('meet end date is blank');
+	const { altitude } = meet;
+	if (
+		altitude !== undefined &&
+		!(Number.isInteger(altitude) && altitude >= 0 && altitude <= 9999)
+	) {
+		issues.push('meet altitude must be a whole number of feet from 0 to 9999');
+	}
 	for (const team of meet.teams) {
 		if (!team.code || !team.name) issues.push(`team ${team.code || '?'} needs a code and a name`);
 	}
@@ -145,7 +164,7 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 			eventSex: event.gender,
 			distance: event.distance,
 			stroke,
-			eventNumber: event.number,
+			eventNumber: teamUnify ? formatSdifEventNumber(event.number) : event.number,
 			eventAge: ageCode(event.ageBand),
 			swimDate: event.date ? mmddyyyyFromIso(event.date) : undefined
 		};
@@ -164,7 +183,12 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 	const d3 = (swimmer: Swimmer) => {
 		emit('D3', D3, {
 			ussNew: idOf(swimmer, 'sdif:uss-new'),
-			preferredName: swimmer.preferredName
+			preferredName: swimmer.preferredName,
+			...(teamUnify && {
+				participation: 'F'.repeat(13),
+				middleName: swimmer.middleName,
+				trailer: 'N'
+			})
 		});
 		counts.d += 1;
 	};
@@ -174,6 +198,7 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 		org,
 		version: 'V3',
 		fileCode: '01',
+		description: options.description ?? (teamUnify ? 'Meet Entries' : undefined),
 		software: options.software?.name ?? 'flipturn',
 		softwareVersion: options.software?.version,
 		contactName: options.contact.name,
@@ -187,6 +212,7 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 		meetType: meet.meetType,
 		start: meet.startDate ? mmddyyyyFromIso(meet.startDate) : undefined,
 		end: meet.endDate ? mmddyyyyFromIso(meet.endDate) : undefined,
+		altitude: altitude ?? (teamUnify ? 0 : undefined),
 		course: meet.course ? COURSE_LETTER[meet.course] : undefined
 	});
 	counts.b += 1;
@@ -209,19 +235,23 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 		const legCount = relays.reduce((n, r) => n + r.legs.length, 0);
 
 		emit('C1', C1, { org, ...code, name: team.name, shortName: team.shortName, ...team.address });
-		if (!team.coach?.name) warnings.add(`team ${team.code} has no coach name`);
-		emit('C2', C2, {
-			org,
-			...code,
-			coach: team.coach?.name,
-			phone: team.coach?.phone,
-			individualEntries: individualCount + relayOnly.size,
-			athletes: bySwimmer.size + relayOnly.size,
-			relayEntries: relays.length,
-			relaySwimmers: legCount,
-			splits: 0
-		});
-		counts.c += 2;
+		counts.c += 1;
+		if (!team.coach?.name && !teamUnify) warnings.add(`team ${team.code} has no coach name`);
+		if (team.coach?.name || !teamUnify) {
+			emit('C2', C2, {
+				org,
+				...code,
+				coach: team.coach?.name,
+				phone: team.coach?.phone,
+				individualEntries: individualCount + relayOnly.size,
+				athletes: bySwimmer.size + relayOnly.size,
+				relayEntries: relays.length,
+				relaySwimmers: legCount,
+				splits: 0
+			});
+			counts.c += 1;
+		}
+		const region = teamUnify ? team.code.slice(0, 2) : undefined;
 
 		for (const [swimmerId, list] of bySwimmer) {
 			const swimmer = swimmers.get(swimmerId) as Swimmer;
@@ -230,9 +260,10 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 				const event = events.get(entry.eventId) as MeetEvent;
 				emit('D0', D0, {
 					...person(swimmer),
+					region,
 					attach: attachCode(swimmer),
 					...eventFields(event, INDIVIDUAL_STROKE),
-					seed: entry.seedTime ? formatSdifTime(entry.seedTime) : undefined,
+					seed: entry.seedTime ? formatSdifTime(entry.seedTime, codeAlign) : undefined,
 					seedCourse: entry.seedTime ? seedCourse(entry.seedCourse, event) : undefined
 				});
 				counts.d += 1;
@@ -241,7 +272,7 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 		}
 		for (const swimmer of relayOnly.values()) {
 			checkSwimmer(swimmer);
-			emit('D0', D0, { ...person(swimmer), attach: attachCode(swimmer) });
+			emit('D0', D0, { ...person(swimmer), region, attach: attachCode(swimmer) });
 			counts.d += 1;
 			d3(swimmer);
 		}
@@ -255,7 +286,7 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 				team: code.code,
 				legCount: relay.legs.length,
 				...eventFields(event, RELAY_STROKE),
-				seed: relay.seedTime ? formatSdifTime(relay.seedTime) : undefined,
+				seed: relay.seedTime ? formatSdifTime(relay.seedTime, codeAlign) : undefined,
 				seedCourse: relay.seedTime ? seedCourse(relay.seedCourse, event) : undefined
 			});
 			counts.e += 1;
@@ -289,7 +320,14 @@ export function writeSdifEntries(meet: Meet, options: SdifWriteOptions): SdifWri
 		swimmers: counts.swimmers,
 		eRecords: counts.e,
 		fRecords: counts.f,
-		gRecords: 0
+		gRecords: 0,
+		...(teamUnify && {
+			batch: 1,
+			newMembers: 0,
+			renewMembers: 0,
+			memberChanges: 0,
+			memberDeletes: 0
+		})
 	});
 
 	if (issues.length > 0) throw new SdifWriteError(issues);

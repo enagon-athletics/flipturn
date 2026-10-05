@@ -44,9 +44,18 @@ export function formatRecord<L extends Layout>(
 	return record.join('');
 }
 
-/** An 8-byte SDIF TIME: `mm:ss.ss` right-justified, or a TIME code left-justified. */
-export function formatSdifTime(time: SwimTime): string {
-	if (time.kind !== 'time') return time.kind.toUpperCase().padEnd(8);
+/** SDIF event number: digits right-justified in the first three bytes, a suffix letter in the fourth. */
+export function formatSdifEventNumber(number: string): string {
+	const match = /^(\d{1,3})([A-Za-z]?)$/.exec(number);
+	return match ? `${match[1]!.padStart(3)}${match[2]?.toUpperCase() || ' '}` : number;
+}
+
+/** An 8-byte SDIF TIME: `mm:ss.ss` right-justified, a TIME code left-justified unless `codes` says. */
+export function formatSdifTime(time: SwimTime, codes: 'left' | 'right' = 'left'): string {
+	if (time.kind !== 'time') {
+		const code = time.kind.toUpperCase();
+		return codes === 'left' ? code.padEnd(8) : code.padStart(8);
+	}
 	const minutes = Math.floor(time.hundredths / 6000);
 	if (minutes >= 100)
 		throw new Error(`${time.hundredths} hundredths is too long for an SDIF time field`);

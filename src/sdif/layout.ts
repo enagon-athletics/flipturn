@@ -4,6 +4,7 @@ export const A0 = {
 	org: { start: 3, length: 1 },
 	version: { start: 4, length: 8 },
 	fileCode: { start: 12, length: 2 },
+	description: { start: 14, length: 30, truncate: true },
 	software: { start: 44, length: 20, truncate: true },
 	softwareVersion: { start: 64, length: 10, truncate: true },
 	contactName: { start: 74, length: 20, truncate: true },
@@ -23,6 +24,7 @@ export const B1 = {
 	meetType: { start: 121, length: 1 },
 	start: { start: 122, length: 8 },
 	end: { start: 130, length: 8 },
+	altitude: { start: 138, length: 4, align: 'right' },
 	course: { start: 150, length: 1 }
 } as const;
 
@@ -68,6 +70,7 @@ export const C2 = {
 
 export const D0 = {
 	org: { start: 3, length: 1 },
+	region: { start: 4, length: 8 },
 	name: { start: 12, length: 28, truncate: true },
 	uss: { start: 40, length: 12 },
 	attach: { start: 52, length: 1 },
@@ -87,7 +90,10 @@ export const D0 = {
 
 export const D3 = {
 	ussNew: { start: 3, length: 14 },
-	preferredName: { start: 17, length: 15, truncate: true }
+	preferredName: { start: 17, length: 15, truncate: true },
+	participation: { start: 34, length: 13 },
+	middleName: { start: 47, length: 100, truncate: true },
+	trailer: { start: 147, length: 1 }
 } as const;
 
 export const E0 = {
@@ -133,5 +139,10 @@ export const Z0 = {
 	swimmers: { start: 64, length: 6, align: 'right' },
 	eRecords: { start: 70, length: 5, align: 'right' },
 	fRecords: { start: 75, length: 6, align: 'right' },
-	gRecords: { start: 81, length: 6, align: 'right' }
+	gRecords: { start: 81, length: 6, align: 'right' },
+	batch: { start: 87, length: 5, align: 'right' },
+	newMembers: { start: 92, length: 3, align: 'right' },
+	renewMembers: { start: 95, length: 3, align: 'right' },
+	memberChanges: { start: 98, length: 3, align: 'right' },
+	memberDeletes: { start: 101, length: 3, align: 'right' }
 } as const;
