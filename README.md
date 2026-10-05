@@ -105,12 +105,13 @@ const { text, warnings } = writeSdifEntries(meet, {
 const bytes = encodeWindows1252(text); // 160-byte records, CRLF line endings
 ```
 
-Event numbers (digits right-justified in columns 73-75, a suffix letter in 76) and NT seeds
-(right-justified) are laid out as Hy-Tek and Team Unify write them, and a team gets a C2 record
-only when it has a coach. Pass `profile: 'team-unify'` to also fill the columns Team Unify's Standard SD3 export writes beyond the spec: an A0
-description (`description`, default `Meet Entries`), B1 altitude (`Meet.altitude`, default 0),
-the team code's LSC in D0 columns 4-11, D3 participation flags and `Swimmer.middleName`, and the
-Z0 batch and membership counts.
+`Meet.altitude` (whole feet, 0-9999) goes in B1. Pass `profile: 'team-unify'` to write the
+layout of Team Unify's Standard SD3 export instead of the spec's where they differ: event numbers
+right-justified in columns 73-75 with an uppercase suffix letter in 76, TIME codes such as NT
+right-justified, no C2 for a team without a coach, an A0 description (`description`, default
+`Meet Entries`), B1 altitude 0 when unset, the team code's LSC in D0 columns 4-11, D3
+participation flags `F`, `Swimmer.middleName` and `N` in column 147, and Z0 batch 1 with zero
+membership counts.
 
 Swim times are integers in hundredths:
 

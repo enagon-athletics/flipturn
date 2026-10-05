@@ -45,6 +45,7 @@ export interface Swimmer {
 	readonly lastName: string;
 	readonly firstName: string;
 	readonly middleInitial?: string;
+	/** Full middle name; only the SDIF `team-unify` profile writes it (D3), D0 uses `middleInitial`. */
 	readonly middleName?: string;
 	readonly preferredName?: string;
 	readonly gender?: 'M' | 'F';

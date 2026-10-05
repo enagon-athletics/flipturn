@@ -156,52 +156,50 @@ const renumbered = (numbers: Record<string, string>): Meet => ({
 	events: entriesMeet.events.map((e) => ({ ...e, number: numbers[e.id] ?? e.number }))
 });
 
-describe('writeSdifEntries in the Team Unify Standard SD3 layout', () => {
-	test('right-justifies an event number in columns 73-75 with any suffix letter in 76', () => {
-		const numbered = (meet: Meet) =>
-			recordsOf(writeSdifEntries(meet, options).text, 'D0')
-				.filter((d0) => cols(d0, 67, 67) !== ' ')
-				.map((d0) => cols(d0, 73, 76));
-		expect(numbered(entriesMeet)).toEqual([' 12 ', '  3A', ' 14 ']);
-		expect(numbered(renumbered({ '12': '1', '3A': '101', '14': '1234' }))).toEqual([
-			'  1 ',
-			'101 ',
-			'1234'
-		]);
-		expect(numbered(renumbered({ '12': '12B', '3A': 'X1' }))).toEqual([' 12B', 'X1  ', ' 14 ']);
-	});
+describe('writeSdifEntries default (spec) layout', () => {
+	const numbered = (meet: Meet, opts: SdifWriteOptions) =>
+		recordsOf(writeSdifEntries(meet, opts).text, 'D0')
+			.filter((d0) => cols(d0, 67, 67) !== ' ')
+			.map((d0) => cols(d0, 73, 76));
 
-	test('lays out relay event numbers the same way', () => {
+	test('right-justifies a numeric event number across columns 73-76 and left-justifies others', () => {
+		expect(numbered(entriesMeet, options)).toEqual(['  12', '3A  ', '  14']);
 		const [e0] = recordsOf(writeSdifEntries(entriesMeet, options).text, 'E0');
-		expect(cols(e0 ?? '', 27, 30)).toBe(' 20 ');
+		expect(cols(e0 ?? '', 27, 30)).toBe('  20');
 	});
 
-	test('right-justifies an NT seed and keeps its course', () => {
+	test('left-justifies an NT seed as TIME Code 020', () => {
 		const nt = recordsOf(writeSdifEntries(entriesMeet, options).text, 'D0')[1] ?? '';
-		expect(cols(nt, 89, 97)).toBe('      NTS');
-		const yards = { ...entriesMeet.entries[1]!, seedCourse: 'SCY' as const };
-		const meet = {
-			...entriesMeet,
-			entries: entriesMeet.entries.map((e, i) => (i === 1 ? yards : e))
-		};
-		expect(cols(recordsOf(writeSdifEntries(meet, options).text, 'D0')[1] ?? '', 89, 97)).toBe(
-			'      NTY'
-		);
+		expect(cols(nt, 89, 97)).toBe('NT      S');
 	});
 
-	test('writes no C2 for a team without a coach and counts one C record per team', () => {
+	test('still writes a C2 and warns when the team has no coach', () => {
 		const { text, warnings } = writeSdifEntries(coachless, options);
-		expect(recordsOf(text, 'C2')).toEqual([]);
-		expect(cols(recordsOf(text, 'Z0')[0] ?? '', 50, 53)).toBe('   1');
-		expect(warnings).toEqual([]);
-		expect(readSdif(text).meet.entries).toEqual(entriesMeet.entries);
+		expect(recordsOf(text, 'C2')).toHaveLength(1);
+		expect(cols(recordsOf(text, 'Z0')[0] ?? '', 50, 53)).toBe('   2');
+		expect(warnings).toEqual(['team BCHSC has no coach name']);
 	});
 
-	test('writes the pool altitude in B1 columns 138-141 and reads it back', () => {
-		const meet: Meet = { ...entriesMeet, altitude: 1200 };
-		const { text } = writeSdifEntries(meet, options);
-		expect(cols(recordsOf(text, 'B1')[0] ?? '', 138, 141)).toBe('1200');
-		expect(readSdif(text).meet.altitude).toBe(1200);
+	test('writes the pool altitude in B1 columns 138-141 and reads it back, 0 included', () => {
+		for (const altitude of [1200, 0, 9999]) {
+			const { text } = writeSdifEntries({ ...entriesMeet, altitude }, options);
+			expect(cols(recordsOf(text, 'B1')[0] ?? '', 138, 141)).toBe(String(altitude).padStart(4));
+			expect(readSdif(text).meet.altitude).toBe(altitude);
+		}
+	});
+
+	test('rejects an altitude that is not a whole number of feet from 0 to 9999', () => {
+		for (const altitude of [-1, 1.5, 10000, Number.NaN]) {
+			const run = () => writeSdifEntries({ ...entriesMeet, altitude }, options);
+			expect(run).toThrow(SdifWriteError);
+			expect(run).toThrow('meet altitude must be a whole number of feet from 0 to 9999');
+		}
+	});
+
+	test('leaves the spec profile byte-identical to the default', () => {
+		expect(writeSdifEntries(entriesMeet, { ...options, profile: 'spec' }).text).toBe(
+			writeSdifEntries(entriesMeet, options).text
+		);
 	});
 });
 
@@ -212,6 +210,46 @@ describe('writeSdifEntries with the team-unify profile', () => {
 		swimmers: entriesMeet.swimmers.map((s, i) => (i === 0 ? { ...s, middleName: 'Marie' } : s))
 	};
 	const { text } = writeSdifEntries(middle, tu);
+	const numbered = (meet: Meet) =>
+		recordsOf(writeSdifEntries(meet, tu).text, 'D0')
+			.filter((d0) => cols(d0, 67, 67) !== ' ')
+			.map((d0) => cols(d0, 73, 76));
+
+	test('right-justifies an event number in columns 73-75 with any suffix letter in 76', () => {
+		expect(numbered(entriesMeet)).toEqual([' 12 ', '  3A', ' 14 ']);
+		expect(numbered(renumbered({ '12': '1', '3A': '101', '14': '1234' }))).toEqual([
+			'  1 ',
+			'101 ',
+			'1234'
+		]);
+		expect(numbered(renumbered({ '12': '12b', '3A': 'X1' }))).toEqual([' 12B', 'X1  ', ' 14 ']);
+	});
+
+	test('lays out relay event numbers the same way', () => {
+		const [e0] = recordsOf(writeSdifEntries(entriesMeet, tu).text, 'E0');
+		expect(cols(e0 ?? '', 27, 30)).toBe(' 20 ');
+	});
+
+	test('right-justifies an NT seed and keeps its course', () => {
+		expect(cols(recordsOf(text, 'D0')[1] ?? '', 89, 97)).toBe('      NTS');
+		const yards = { ...entriesMeet.entries[1]!, seedCourse: 'SCY' as const };
+		const meet = {
+			...entriesMeet,
+			entries: entriesMeet.entries.map((e, i) => (i === 1 ? yards : e))
+		};
+		expect(cols(recordsOf(writeSdifEntries(meet, tu).text, 'D0')[1] ?? '', 89, 97)).toBe(
+			'      NTY'
+		);
+	});
+
+	test('writes no C2 for a team without a coach and counts one C record per team', () => {
+		const { text: bare, warnings } = writeSdifEntries(coachless, tu);
+		expect(recordsOf(bare, 'C2')).toEqual([]);
+		expect(cols(recordsOf(bare, 'Z0')[0] ?? '', 50, 53)).toBe('   1');
+		expect(warnings).toEqual([]);
+		expect(readSdif(bare).meet.entries).toEqual(entriesMeet.entries);
+		expect(recordsOf(text, 'C2')).toHaveLength(1);
+	});
 
 	test('describes the file in A0 columns 14-43, overridable', () => {
 		expect(cols(recordsOf(text, 'A0')[0] ?? '', 14, 43)).toBe('Meet Entries'.padEnd(30));
@@ -243,20 +281,13 @@ describe('writeSdifEntries with the team-unify profile', () => {
 	});
 
 	test('writes batch 1 and zero membership counts in Z0 columns 87-103', () => {
-		const z0 = recordsOf(text, 'Z0')[0] ?? '';
-		expect(cols(z0, 87, 160)).toBe('    1  0  0  0  0'.padEnd(74));
+		expect(cols(recordsOf(text, 'Z0')[0] ?? '', 87, 160)).toBe('    1  0  0  0  0'.padEnd(74));
 	});
 
-	test('round-trips through the reader to the same meet', () => {
+	test('round-trips through the reader to the same meet, with the altitude it wrote', () => {
 		const read = readSdif(writeSdifEntries(entriesMeet, tu).text);
-		expect(read.meet).toEqual(entriesMeet);
+		expect(read.meet).toEqual({ ...entriesMeet, altitude: 0 });
 		expect(read.warnings).toEqual([]);
-	});
-
-	test('leaves the spec profile byte-identical to the default', () => {
-		expect(writeSdifEntries(entriesMeet, { ...options, profile: 'spec' }).text).toBe(
-			writeSdifEntries(entriesMeet, options).text
-		);
 	});
 });
 
@@ -266,7 +297,8 @@ describe('formatSdifTime', () => {
 		expect(formatSdifTime({ kind: 'time', hundredths: 5812 })).toBe('   58.12');
 		expect(formatSdifTime({ kind: 'time', hundredths: 532 })).toBe('    5.32');
 		expect(formatSdifTime({ kind: 'time', hundredths: 60532 })).toBe('10:05.32');
-		expect(formatSdifTime({ kind: 'nt' })).toBe('      NT');
+		expect(formatSdifTime({ kind: 'nt' })).toBe('NT      ');
+		expect(formatSdifTime({ kind: 'nt' }, 'right')).toBe('      NT');
 	});
 
 	test('keeps the colon at byte 3 and the period at byte 6 for any time', () => {
