@@ -3,10 +3,10 @@ B11        Synthetic Fall Classic                                               
 B21        Harbour Swim Club                                                                                            2505550101                              
 C11        BCHSC Harbour Swim Club             Harbour                                                     Victoria            BC          CAN                  
 C21        BCHSC Coach, Casey                  2505550102       7     6    1     5     0                                                                        
-D01        Tern, Ada M                 123456789   ACAN0314201214FF 1001  121314         1:05.32S                                                               
+D01        Tern, Ada M                 123456789   ACAN0314201214FF 1001 12 1314         1:05.32S                                                               
 D3123456789     Addie                                                                                                                                           
-D01        Tern, Ada M                 123456789   ACAN0314201214FF  5043A  UN14        NT      S                                                               
-D01        Petrel, Ben                             ACAN0702201016MM 4001  1415OV         4:50.00Y                                                               
+D01        Tern, Ada M                 123456789   ACAN0314201214FF  504  3AUN14              NTS                                                               
+D01        Petrel, Ben                             ACAN0702201016MM 4001 14 15OV         4:50.00Y                                                               
 D3                                                                                                                                                              
 D01        Gannet, Cleo                            ACAN1130201213F                                                                                              
 D3                                                                                                                                                              
@@ -16,7 +16,7 @@ D01        Auk, Emma                               ACAN0621201214F
 D3                                                                                                                                                              
 D01        Loon, Fay                               ACAN0909201313F                                                                                              
 D3                                                                                                                                                              
-E01        ABCHSC  5F 2007  201314            2:25.67S                                                                                                          
+E01        ABCHSC  5F 2007 20 1314            2:25.67S                                                                                                          
 F01            BCHSC AGannet, Cleo                            CAN1130201213F101                                                                                 
 F01            BCHSC ATern, Ada M                 123456789   CAN0314201214F202             123456789     Addie                                                 
 F01            BCHSC ASkua, Dana                              CAN0105201313F303                                                                                 

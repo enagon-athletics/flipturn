@@ -45,6 +45,7 @@ export interface Swimmer {
 	readonly lastName: string;
 	readonly firstName: string;
 	readonly middleInitial?: string;
+	readonly middleName?: string;
 	readonly preferredName?: string;
 	readonly gender?: 'M' | 'F';
 	/** ISO `YYYY-MM-DD`. */
@@ -193,6 +194,8 @@ export interface Meet {
 	/** SDIF MEET Code 005 (`1` invitational, `9` dual, ...). */
 	readonly meetType?: string;
 	readonly sanction?: string;
+	/** Pool altitude in feet above sea level. */
+	readonly altitude?: number;
 	readonly address?: Address;
 	readonly host?: MeetHost;
 	readonly entryLimits?: EntryLimits;
