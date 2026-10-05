@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/enagon-athletics/flipturn/compare/v0.3.0...v0.4.0) (2026-10-05)
+
+
+### Features
+
+* **sdif:** add a team-unify profile and pool altitude to the SD3 entries writer ([#5](https://github.com/enagon-athletics/flipturn/issues/5)) ([cf613e9](https://github.com/enagon-athletics/flipturn/commit/cf613e9780a36a5130740bb86a0e11b862f97d59))
+
 ## [0.3.0](https://github.com/enagon-athletics/flipturn/compare/v0.2.0...v0.3.0) (2026-09-26)
 
 
