@@ -26,7 +26,7 @@ jobs:
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
@@ -42,7 +42,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref || github.sha }}
 
@@ -51,7 +51,7 @@ jobs:
           cache: true
 
       # No registry-url: setup-node's placeholder _authToken blocks the OIDC fallback.
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 26
 
